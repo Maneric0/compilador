@@ -1,0 +1,583 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package view;
+
+import controller.Constants;
+import controller.LexicalError;
+import controller.Lexico;
+import controller.NumberedBorder;
+import controller.SemanticError;
+import controller.Semantico;
+import controller.Sintatico;
+import controller.SyntaticError;
+import controller.Token;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+/**
+ *
+ * @author Manerico
+ */
+public class Interface extends javax.swing.JFrame {
+
+    private File arquivoAtual = null;
+
+    public Interface() {
+        initComponents();
+        textEditor.setBorder(new NumberedBorder());
+        textMensagem.setEditable(false);
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl N"), "novo");
+        textEditor.getActionMap().put("novo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnNovo.doClick();
+            }
+        });
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl O"), "abrir");
+        textEditor.getActionMap().put("abrir", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnAbrir.doClick();
+            }
+        });
+
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl S"), "salvar");
+        textEditor.getActionMap().put("salvar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnSalvar.doClick();
+            }
+        });
+
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl C"), "copiar");
+        textEditor.getActionMap().put("copiar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnCopiar.doClick();
+            }
+        });
+
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl V"), "colar");
+        textEditor.getActionMap().put("colar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnColar.doClick();
+            }
+        });
+
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl X"), "recortar");
+        textEditor.getActionMap().put("recortar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnRecortar.doClick();
+            }
+        });
+
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F7"), "compilar");
+        textEditor.getActionMap().put("compilar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnCompilar.doClick();
+            }
+        });
+        textEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"), "equipe");
+        textEditor.getActionMap().put("equipe", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnEquipe.doClick();
+            }
+        });
+        atualizarStatus();
+
+    }
+    
+    private void atualizarStatus() {
+        if (arquivoAtual != null) {
+            textStatus.setText("Arquivo: " + arquivoAtual.getAbsolutePath());
+        }else{
+            textStatus.setText("");
+        }
+    }
+    
+    private int getLinha(String codigo, int pos) {
+        int linha = 1;
+        for (int i = 0; i < pos && i < codigo.length(); i++) {
+            if (codigo.charAt(i) == '\n') {
+                linha++;
+            }
+        }
+        return linha;
+    }
+
+    private String getClassePorExtenso(int id) {
+        switch(id) {
+            case Constants.t_identificador: return "Identificador";
+            case Constants.t_cint: return "Constante Inteira";
+            case Constants.t_cfloat: return "Constante Float";
+            case Constants.t_cstring: return "Constante String";
+            case Constants.t_pr_if: return "Palavra Reservada 'if'";
+            case Constants.t_pr_else: return "Palavra Reservada 'else'";
+            default: return "Token " + id;
+        }
+    }
+
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jToolBar1 = new javax.swing.JToolBar();
+        btnNovo = new javax.swing.JButton();
+        btnAbrir = new javax.swing.JButton();
+        btnSalvar = new javax.swing.JButton();
+        btnCopiar = new javax.swing.JButton();
+        btnColar = new javax.swing.JButton();
+        btnRecortar = new javax.swing.JButton();
+        btnCompilar = new javax.swing.JButton();
+        btnEquipe = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        textMensagem = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        textEditor = new javax.swing.JTextArea();
+        textStatus = new javax.swing.JTextField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+
+        jToolBar1.setFloatable(true);
+        jToolBar1.setBorderPainted(false);
+        jToolBar1.setEnabled(false);
+        jToolBar1.setFocusable(false);
+
+        btnNovo.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnNovo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/novo.png"))); // NOI18N
+        btnNovo.setText("novo [ctrl+n]");
+        btnNovo.setToolTipText("");
+        btnNovo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnNovo.setFocusable(false);
+        btnNovo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnNovo.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnNovo.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnNovo.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnNovo.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnNovo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnNovo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNovoActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnNovo);
+
+        btnAbrir.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/abrir.jpeg"))); // NOI18N
+        btnAbrir.setText("abrir [ctrl+o]");
+        btnAbrir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnAbrir.setFocusable(false);
+        btnAbrir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAbrir.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnAbrir.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnAbrir.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnAbrir.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnAbrir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAbrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAbrirActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnAbrir);
+
+        btnSalvar.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnSalvar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/salvar.jpeg"))); // NOI18N
+        btnSalvar.setText("salvar [ctrl+s]");
+        btnSalvar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnSalvar.setFocusable(false);
+        btnSalvar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSalvar.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnSalvar.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnSalvar.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnSalvar.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnSalvar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSalvar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalvarActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnSalvar);
+
+        btnCopiar.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/copiar.jpeg"))); // NOI18N
+        btnCopiar.setText("copiar [ctrl+c]");
+        btnCopiar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnCopiar.setFocusable(false);
+        btnCopiar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnCopiar.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnCopiar.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnCopiar.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnCopiar.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnCopiar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnCopiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCopiarActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnCopiar);
+
+        btnColar.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnColar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/colar.jpeg"))); // NOI18N
+        btnColar.setText("colar [ctrl+v]");
+        btnColar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnColar.setFocusable(false);
+        btnColar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnColar.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnColar.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnColar.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnColar.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnColar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnColar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnColarActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnColar);
+
+        btnRecortar.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnRecortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/recortar.jpeg"))); // NOI18N
+        btnRecortar.setText("recortar [ctrl+x]");
+        btnRecortar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnRecortar.setFocusable(false);
+        btnRecortar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnRecortar.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnRecortar.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnRecortar.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnRecortar.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnRecortar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnRecortar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRecortarActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnRecortar);
+
+        btnCompilar.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnCompilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/compilar.jpeg"))); // NOI18N
+        btnCompilar.setText("compilar [F7]");
+        btnCompilar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnCompilar.setFocusable(false);
+        btnCompilar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnCompilar.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnCompilar.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnCompilar.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnCompilar.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnCompilar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnCompilar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCompilarActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnCompilar);
+
+        btnEquipe.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnEquipe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/equipe.jpeg"))); // NOI18N
+        btnEquipe.setText("equiper [F1]");
+        btnEquipe.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnEquipe.setFocusable(false);
+        btnEquipe.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnEquipe.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnEquipe.setMaximumSize(new java.awt.Dimension(82, 70));
+        btnEquipe.setMinimumSize(new java.awt.Dimension(82, 70));
+        btnEquipe.setPreferredSize(new java.awt.Dimension(82, 70));
+        btnEquipe.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnEquipe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEquipeActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnEquipe);
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        textMensagem.setColumns(20);
+        textMensagem.setRows(5);
+        jScrollPane1.setViewportView(textMensagem);
+
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        textEditor.setColumns(20);
+        textEditor.setRows(5);
+        jScrollPane2.setViewportView(textEditor);
+
+        textStatus.setEditable(false);
+        textStatus.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        textStatus.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textStatus.setPreferredSize(new java.awt.Dimension(1500, 25));
+        textStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textStatusActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(textStatus, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
+        textEditor.setText("");
+        textMensagem.setText("");
+        arquivoAtual = null;
+        atualizarStatus();
+    }//GEN-LAST:event_btnNovoActionPerformed
+
+    private void btnAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Arquivos de Texto (*.txt)", "txt");
+        chooser.setFileFilter(filtro);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            arquivoAtual = chooser.getSelectedFile();
+            try {
+                String conteudo = new String(Files.readAllBytes(arquivoAtual.toPath()));
+                textEditor.setText(conteudo);
+                textMensagem.setText("");
+                atualizarStatus();
+            } catch (Exception ex) {
+                textMensagem.setText("Erro ao abrir arquivo: " + ex.getMessage());
+            }
+
+        }
+    }//GEN-LAST:event_btnAbrirActionPerformed
+
+    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Arquivos de Texto (*.txt)", "txt");
+        chooser.setFileFilter(filtro);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            arquivoAtual = chooser.getSelectedFile();
+
+            if (!arquivoAtual.getName().toLowerCase().endsWith(".txt")) {
+                arquivoAtual = new File(arquivoAtual.getAbsolutePath() + ".txt");
+            }
+
+            try {
+                Files.write(arquivoAtual.toPath(), textEditor.getText().getBytes());
+                textMensagem.setText("");
+                atualizarStatus();
+            } catch (Exception ex) {
+                textMensagem.setText("Erro ao salvar arquivo: " + ex.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_btnSalvarActionPerformed
+
+    private void btnCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopiarActionPerformed
+        textEditor.copy();
+    }//GEN-LAST:event_btnCopiarActionPerformed
+
+    private void btnColarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnColarActionPerformed
+        textEditor.paste();
+    }//GEN-LAST:event_btnColarActionPerformed
+
+    private void btnRecortarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecortarActionPerformed
+        textEditor.cut();
+    }//GEN-LAST:event_btnRecortarActionPerformed
+
+    private void btnCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompilarActionPerformed
+        textMensagem.setText("");
+        
+        Lexico lexico = new Lexico();
+        Sintatico sintatico = new Sintatico();
+        Semantico semantico = new Semantico();
+        String codigoFonte = textEditor.getText();
+        lexico.setInput(textEditor.getText());
+
+        StringBuilder textRetorno = new StringBuilder();
+        try {
+           sintatico.parse(lexico, semantico);
+           textMensagem.setText("Arquivo compilado com sucesso!");
+            System.out.println(semantico.getCodigo());
+        }
+        catch (LexicalError e) {
+            int posicaoErro = e.getPosition();
+            int linhaErro = getLinha(codigoFonte, posicaoErro);
+            String msg = e.getMessage();
+
+            // Descobre o símbolo real no código fonte
+            String simbolo = "";
+            if (posicaoErro >= 0 && posicaoErro < codigoFonte.length()) {
+                simbolo = String.valueOf(codigoFonte.charAt(posicaoErro));
+            }
+
+            // Ajusta o tipo de erro conforme o símbolo
+            if (simbolo.equals("@") || simbolo.equals("~")) {
+                textMensagem.setText("linha: " + linhaErro + " " + simbolo + " símbolo inválido");
+            } 
+            else if (msg.toLowerCase().contains("ident") || msg.toLowerCase().contains("id inval")) {
+                textMensagem.setText("linha: " + linhaErro + " identificador inválido");
+            } 
+            else if (simbolo.equals("\"")) {
+                textMensagem.setText("linha: " + linhaErro + " constante_string inválida");
+            } 
+            else if(simbolo.equals("{")){
+                int fecha = codigoFonte.indexOf("}", posicaoErro + 1);
+                if (fecha == -1){
+                    textMensagem.setText("Linha: " + linhaErro + " comentário invalido ou não finalizado");
+             }
+
+            }
+            else {
+                // Padrão — se não for nenhum dos casos tratados
+                textMensagem.setText("Linha " + linhaErro + ": " + e.getMessage());
+            }
+        }
+
+        catch ( SyntaticError e ) {
+            int posicaoErro = e.getPosition();
+            String encontrado = "";
+            if (posicaoErro >= 0 && posicaoErro < codigoFonte.length()) {
+                char caractereErro = codigoFonte.charAt(posicaoErro);
+
+                if (Character.isWhitespace(caractereErro)) {
+                    encontrado = "espaço em branco";
+                }
+                
+                else if (caractereErro == '$') {
+                    encontrado = "EOF";
+                }
+                
+                else if (Character.isLetter(caractereErro)) {
+                    int inicio = posicaoErro;
+                    int fim = posicaoErro;
+                    
+                    while (inicio > 0 && Character.isLetter(codigoFonte.charAt(inicio - 1))) {
+                        inicio--;
+                    }
+
+                    while (fim < codigoFonte.length() - 1 && Character.isLetter(codigoFonte.charAt(fim + 1))) {
+                        fim++;
+                    }
+
+                    encontrado = codigoFonte.substring(inicio, fim + 1);
+                }
+
+                else {
+
+                    String[] simbolosEspeciais = {"+", "-", "*", "/", "==", "~=", "<", ">", "=", "<-", "(", ")", ";", ","};
+
+                    boolean simboloCompostoEncontrado = false;
+                    for (String simbolo : simbolosEspeciais) {
+                        int len = simbolo.length();
+                        if (posicaoErro + len <= codigoFonte.length()) {
+                            String trecho = codigoFonte.substring(posicaoErro, posicaoErro + len);
+                            if (trecho.equals(simbolo)) {
+                                encontrado = simbolo;
+                                simboloCompostoEncontrado = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!simboloCompostoEncontrado) {
+                        encontrado = String.valueOf(caractereErro);
+                    }
+                }
+            } else {
+                encontrado = "EOF";
+            }
+            int linhaErro = getLinha(codigoFonte, e.getPosition());
+            textMensagem.setText("Linha " + linhaErro + ": encontrado "+ encontrado +" " + e.getMessage());
+
+            // e.getMessage() são os símbolos esperados
+            // e.getMessage() - retorna a mensagem de erro de PARSER_ERROR (ver ParserConstants.java)
+            // necessário adaptar conforme o enunciado da parte 3
+
+            // e.getPosition() - retorna a posição inicial do erro 
+            // necessário adaptar para mostrar a linha  
+
+            // necessário mostrar também o símbolo encontrado 
+        }
+        
+        catch ( SemanticError e ) {
+            // trata erros semânticos na parte 4
+        }
+    }//GEN-LAST:event_btnCompilarActionPerformed
+
+    private void btnEquipeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEquipeActionPerformed
+        textMensagem.setText("Equipe: Leonardo Luiz Moreira Pinheiro e Vínicius Mannerich Dalmonico");
+    }//GEN-LAST:event_btnEquipeActionPerformed
+
+    private void textStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textStatusActionPerformed
+
+    }//GEN-LAST:event_textStatusActionPerformed
+
+    public static void main(String args[]) {
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Interface().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAbrir;
+    private javax.swing.JButton btnColar;
+    private javax.swing.JButton btnCompilar;
+    private javax.swing.JButton btnCopiar;
+    private javax.swing.JButton btnEquipe;
+    private javax.swing.JButton btnNovo;
+    private javax.swing.JButton btnRecortar;
+    private javax.swing.JButton btnSalvar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTextArea textEditor;
+    private javax.swing.JTextArea textMensagem;
+    private javax.swing.JTextField textStatus;
+    // End of variables declaration//GEN-END:variables
+}
