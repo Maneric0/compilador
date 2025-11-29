@@ -28,6 +28,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author Manerico
  */
+
 public class Interface extends javax.swing.JFrame {
 
     private File arquivoAtual = null;
@@ -100,15 +101,15 @@ public class Interface extends javax.swing.JFrame {
         atualizarStatus();
 
     }
-    
+
     private void atualizarStatus() {
         if (arquivoAtual != null) {
             textStatus.setText("Arquivo: " + arquivoAtual.getAbsolutePath());
-        }else{
+        } else {
             textStatus.setText("");
         }
     }
-    
+
     private int getLinha(String codigo, int pos) {
         int linha = 1;
         for (int i = 0; i < pos && i < codigo.length(); i++) {
@@ -120,17 +121,23 @@ public class Interface extends javax.swing.JFrame {
     }
 
     private String getClassePorExtenso(int id) {
-        switch(id) {
-            case Constants.t_identificador: return "Identificador";
-            case Constants.t_cint: return "Constante Inteira";
-            case Constants.t_cfloat: return "Constante Float";
-            case Constants.t_cstring: return "Constante String";
-            case Constants.t_pr_if: return "Palavra Reservada 'if'";
-            case Constants.t_pr_else: return "Palavra Reservada 'else'";
-            default: return "Token " + id;
+        switch (id) {
+            case Constants.t_identificador:
+                return "Identificador";
+            case Constants.t_cint:
+                return "Constante Inteira";
+            case Constants.t_cfloat:
+                return "Constante Float";
+            case Constants.t_cstring:
+                return "Constante String";
+            case Constants.t_pr_if:
+                return "Palavra Reservada 'if'";
+            case Constants.t_pr_else:
+                return "Palavra Reservada 'else'";
+            default:
+                return "Token " + id;
         }
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -429,7 +436,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompilarActionPerformed
         textMensagem.setText("");
-        
+
         Lexico lexico = new Lexico();
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();
@@ -438,11 +445,10 @@ public class Interface extends javax.swing.JFrame {
 
         StringBuilder textRetorno = new StringBuilder();
         try {
-           sintatico.parse(lexico, semantico);
-           textMensagem.setText("Arquivo compilado com sucesso!");
+            sintatico.parse(lexico, semantico);
+            textMensagem.setText("Arquivo compilado com sucesso!");
             System.out.println(semantico.getCodigo());
-        }
-        catch (LexicalError e) {
+        } catch (LexicalError e) {
             int posicaoErro = e.getPosition();
             int linhaErro = getLinha(codigoFonte, posicaoErro);
             String msg = e.getMessage();
@@ -456,93 +462,142 @@ public class Interface extends javax.swing.JFrame {
             // Ajusta o tipo de erro conforme o símbolo
             if (simbolo.equals("@") || simbolo.equals("~")) {
                 textMensagem.setText("linha: " + linhaErro + " " + simbolo + " símbolo inválido");
-            } 
-            else if (msg.toLowerCase().contains("ident") || msg.toLowerCase().contains("id inval")) {
+            } else if (msg.toLowerCase().contains("ident") || msg.toLowerCase().contains("id inval")) {
                 textMensagem.setText("linha: " + linhaErro + " identificador inválido");
-            } 
-            else if (simbolo.equals("\"")) {
+            } else if (simbolo.equals("\"")) {
                 textMensagem.setText("linha: " + linhaErro + " constante_string inválida");
-            } 
-            else if(simbolo.equals("{")){
+            } else if (simbolo.equals("{")) {
                 int fecha = codigoFonte.indexOf("}", posicaoErro + 1);
-                if (fecha == -1){
+                if (fecha == -1) {
                     textMensagem.setText("Linha: " + linhaErro + " comentário invalido ou não finalizado");
-             }
+                }
 
-            }
-            else {
+            } else {
                 // Padrão — se não for nenhum dos casos tratados
                 textMensagem.setText("Linha " + linhaErro + ": " + e.getMessage());
             }
-        }
-
-        catch ( SyntaticError e ) {
+        } catch (SyntaticError e) {
             int posicaoErro = e.getPosition();
             String encontrado = "";
+
             if (posicaoErro >= 0 && posicaoErro < codigoFonte.length()) {
                 char caractereErro = codigoFonte.charAt(posicaoErro);
 
-                if (Character.isWhitespace(caractereErro)) {
+                if (caractereErro == '"') {
+                    int fim = posicaoErro + 1;
+                    while (fim < codigoFonte.length() && codigoFonte.charAt(fim) != '"') {
+                        fim++;
+                    }
+
+                    // Tem fechamento?
+                    if (fim < codigoFonte.length()) {
+                        encontrado = "constante_string";
+                    } else {
+                        encontrado = "constante_string (não fechada)";
+                    }
+                } else if (Character.isWhitespace(caractereErro)) {
                     encontrado = "espaço em branco";
-                }
-                
-                else if (caractereErro == '$') {
+                } else if (caractereErro == '$') {
                     encontrado = "EOF";
-                }
-                
-                else if (Character.isLetter(caractereErro)) {
+                } else if (Character.isDigit(caractereErro)) {
                     int inicio = posicaoErro;
                     int fim = posicaoErro;
-                    
-                    while (inicio > 0 && Character.isLetter(codigoFonte.charAt(inicio - 1))) {
+
+                    // números inteiros ou float
+                    while (inicio > 0 && (Character.isDigit(codigoFonte.charAt(inicio - 1))
+                            || codigoFonte.charAt(inicio - 1) == '.')) {
                         inicio--;
                     }
 
-                    while (fim < codigoFonte.length() - 1 && Character.isLetter(codigoFonte.charAt(fim + 1))) {
+                    while (fim < codigoFonte.length() - 1
+                            && (Character.isDigit(codigoFonte.charAt(fim + 1))
+                            || codigoFonte.charAt(fim + 1) == '.')) {
                         fim++;
                     }
 
                     encontrado = codigoFonte.substring(inicio, fim + 1);
+                
+            } else if (Character.isLetter(caractereErro)) {
+                int inicio = posicaoErro;
+                int fim = posicaoErro;
+
+                while (inicio > 0 && Character.isLetter(codigoFonte.charAt(inicio - 1))) {
+                    inicio--;
                 }
 
-                else {
+                while (fim < codigoFonte.length() - 1 && Character.isLetter(codigoFonte.charAt(fim + 1))) {
+                    fim++;
+                }
 
-                    String[] simbolosEspeciais = {"+", "-", "*", "/", "==", "~=", "<", ">", "=", "<-", "(", ")", ";", ","};
+                encontrado = codigoFonte.substring(inicio, fim + 1);
+            } else {
+                String[] simbolosEspeciais = {"+", "-", "*", "/", "==", "~=", "<", ">", "=", "<-", "(", ")", ";", ","};
 
-                    boolean simboloCompostoEncontrado = false;
-                    for (String simbolo : simbolosEspeciais) {
-                        int len = simbolo.length();
-                        if (posicaoErro + len <= codigoFonte.length()) {
-                            String trecho = codigoFonte.substring(posicaoErro, posicaoErro + len);
-                            if (trecho.equals(simbolo)) {
-                                encontrado = simbolo;
-                                simboloCompostoEncontrado = true;
-                                break;
-                            }
+                boolean simboloCompostoEncontrado = false;
+                for (String simbolo : simbolosEspeciais) {
+                    int len = simbolo.length();
+                    if (posicaoErro + len <= codigoFonte.length()) {
+                        String trecho = codigoFonte.substring(posicaoErro, posicaoErro + len);
+                        if (trecho.equals(simbolo)) {
+                            encontrado = simbolo;
+                            simboloCompostoEncontrado = true;
+                            break;
                         }
                     }
-                    
-                    if (!simboloCompostoEncontrado) {
-                        encontrado = String.valueOf(caractereErro);
-                    }
                 }
-            } else {
+
+                if (!simboloCompostoEncontrado) {
+                    encontrado = String.valueOf(caractereErro);
+                }
+            }
+        }else {
                 encontrado = "EOF";
             }
-            int linhaErro = getLinha(codigoFonte, e.getPosition());
-            textMensagem.setText("Linha " + linhaErro + ": encontrado "+ encontrado +" " + e.getMessage());
+String msg = e.getMessage();
 
-            // e.getMessage() são os símbolos esperados
-            // e.getMessage() - retorna a mensagem de erro de PARSER_ERROR (ver ParserConstants.java)
-            // necessário adaptar conforme o enunciado da parte 3
+    // 2.1 — esperado int float bool string list (todos)
+    if (msg.contains("int float bool string list")) {
+        msg = msg.replace("int float bool string list", "tipo");
+    }
 
-            // e.getPosition() - retorna a posição inicial do erro 
-            // necessário adaptar para mostrar a linha  
+    // 2.2 — esperado int float bool string (todos, sem list)
+    else if (msg.contains("int float bool string")) {
+        msg = msg.replace("int float bool string", "tipo primitivo");
+    }
 
-            // necessário mostrar também o símbolo encontrado 
-        }
-        
-        catch ( SemanticError e ) {
+    // 2.3 — troca de mensagens dos não terminais
+    msg = msg.replace("<elemento>", "expressao");
+    msg = msg.replace("<posicao>", "expressao");
+    msg = msg.replace("<dec_variavel>", "tipo");
+    msg = msg.replace("<tipo>", "tipo");
+    msg = msg.replace("<tipo_simples>", "tipo primitivo");
+    msg = msg.replace("<lista_entrada>", "identificador constante_string");
+    msg = msg.replace("<lista_expressao1>", ") ,");
+    msg = msg.replace("<operador_relacional>", "== ~= < >");
+
+
+    // ---------------------------
+    // 3) LOCALIZA A LINHA DO ERRO
+    // ---------------------------
+    int linhaErro = getLinha(codigoFonte, e.getPosition());
+
+    // ---------------------------
+    // 4) MENSAGEM FINAL
+    // ---------------------------
+    textMensagem.setText("Linha " + linhaErro + ": encontrado " + encontrado + " " + msg);
+
+        // e.getMessage() são os símbolos esperados
+        // e.getMessage() - retorna a mensagem de erro de PARSER_ERROR (ver ParserConstants.java)
+        // necessário adaptar conforme o enunciado da parte 3
+        // e.getPosition() - retorna a posição inicial do erro 
+        // necessário adaptar para mostrar a linha  
+        // necessário mostrar também o símbolo encontrado 
+    }
+    catch (SemanticError e
+
+    
+    
+) {
             // trata erros semânticos na parte 4
         }
     }//GEN-LAST:event_btnCompilarActionPerformed
@@ -557,12 +612,12 @@ public class Interface extends javax.swing.JFrame {
 
     public static void main(String args[]) {
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Interface().setVisible(true);
-            }
-        });
-    }
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new Interface().setVisible(true);
+        }
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbrir;
