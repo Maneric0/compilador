@@ -27,8 +27,11 @@ public class Semantico implements Constants
             case 103 -> executar103();
             case 104 -> executar104();
             case 105 -> executar105();
+            case 108 -> executar108();
+            case 110 -> executar110();
             case 115 -> executar115();
             case 116 -> executar116();
+            case 118 -> executar118();
         }
         
         //System.out.println("Ação #"+action+", Token: "+token);
@@ -52,13 +55,10 @@ public class Semantico implements Constants
     }
     
     public void executar102(){
-        tipo = pilha_tipos.pop();
-        
+        tipo = pilha_tipos.pop();  
         if(tipo.equals("int64"))
-            codigo.append("conv.i8\n");
-        
-        codigo.append("call void [mscorlib]System.Console::Write("+ tipo +")\n");
-        
+            codigo.append("conv.i8\n");    
+        pilha_tipos.push(tipo);
         tipo = "";
     }
     
@@ -84,6 +84,21 @@ public class Semantico implements Constants
         codigo.append("\n");
     }
     
+    public void executar108(){
+        tipo = pilha_tipos.pop();
+        pilha_tipos.pop();
+        codigo.append("mul");
+        codigo.append("\n");
+        pilha_tipos.push(tipo);
+    }   
+    
+    public void executar110(){
+        pilha_tipos.push("int64");
+        codigo.append("ldc.i4 -1\n");
+        codigo.append("mul \n");
+        codigo.append("\n");
+    }    
+    
     public void executar115(){
         pilha_tipos.push("bool");
         codigo.append("ldc.i4 1\n");
@@ -94,6 +109,12 @@ public class Semantico implements Constants
         pilha_tipos.push("bool");
         codigo.append("ldc.i4 0\n");
         codigo.append("\n");
+    }
+    
+    public void executar118(){
+        tipo = pilha_tipos.pop();
+        codigo.append("call void [mscorlib]System.Console::Write("+ tipo +")\n");
+        tipo = "";
     }
 
 
