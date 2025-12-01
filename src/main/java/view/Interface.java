@@ -14,7 +14,9 @@ import controller.Sintatico;
 import controller.SyntaticError;
 import controller.Token;
 import java.awt.event.ActionEvent;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.swing.AbstractAction;
@@ -31,6 +33,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Interface extends javax.swing.JFrame {
 
+    //TODO: se tiver arquivoAtual, ao compilar, buscar nome desse arquivo e salvar
+    //como nome do .il, caso não tenha arquivo atual, obrigar a criação de um novo (ctrl + s) então gerar o .il
     private File arquivoAtual = null;
 
     public Interface() {
@@ -448,6 +452,24 @@ public class Interface extends javax.swing.JFrame {
             sintatico.parse(lexico, semantico);
             textMensagem.setText("Arquivo compilado com sucesso!");
             System.out.println(semantico.getCodigo());
+            
+            try {
+                // Pega o diretório do JAR em execução
+                String jarDir = new File(".").getCanonicalPath();
+
+                // Cria o arquivo saida.il dentro desse diretório
+                File arquivo = new File(jarDir + File.separator + "saida.il");
+
+                // Escreve usando BufferedWriter (código simples)
+                            BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+                bw.write(semantico.getCodigo().toString());
+                bw.close();
+                
+                System.out.println("Arquivo .il gerado em: " + arquivo.getAbsolutePath());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (LexicalError e) {
             int posicaoErro = e.getPosition();
             int linhaErro = getLinha(codigoFonte, posicaoErro);

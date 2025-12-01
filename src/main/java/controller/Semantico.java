@@ -27,8 +27,13 @@ public class Semantico implements Constants
             case 103 -> executar103();
             case 104 -> executar104();
             case 105 -> executar105();
+            case 106 -> executar106();
+            case 107 -> executar107();
             case 108 -> executar108();
+            case 109 -> executar109();
             case 110 -> executar110();
+            case 111 -> executar111(token);
+            case 112 -> executar112(token);
             case 115 -> executar115();
             case 116 -> executar116();
             case 118 -> executar118();
@@ -55,7 +60,7 @@ public class Semantico implements Constants
     }
     
     public void executar102(){
-        tipo = pilha_tipos.pop();  
+        tipo = pilha_tipos.pop();
         if(tipo.equals("int64"))
             codigo.append("conv.i8\n");    
         pilha_tipos.push(tipo);
@@ -84,20 +89,99 @@ public class Semantico implements Constants
         codigo.append("\n");
     }
     
-    public void executar108(){
+    public void executar106(){
         tipo = pilha_tipos.pop();
-        pilha_tipos.pop();
-        codigo.append("mul");
+        String tipo2 = pilha_tipos.pop();
+        codigo.append("add");
         codigo.append("\n");
-        pilha_tipos.push(tipo);
+        
+        if (tipo.equals(tipo2)) {
+           pilha_tipos.push(tipo);
+        }
+        else {
+            pilha_tipos.push("float64");
+        }
+    }
+        
+    public void executar107(){
+        tipo = pilha_tipos.pop();
+        String tipo2 = pilha_tipos.pop();
+        codigo.append("sub");
+        codigo.append("\n");
+
+        if (tipo.equals(tipo2)) {
+           pilha_tipos.push(tipo);
+        }
+        else {
+            pilha_tipos.push("float64");
+        }
     }   
     
+    public void executar108(){
+        tipo = pilha_tipos.pop();
+        String tipo2 = pilha_tipos.pop();
+        codigo.append("mul");
+        codigo.append("\n");
+        
+        if (tipo.equals(tipo2)) {
+           pilha_tipos.push(tipo);
+        }
+        else {
+            pilha_tipos.push("float64");
+        }
+    }
+    
+    public void executar109(){
+        tipo = pilha_tipos.pop();
+        String tipo2 = pilha_tipos.pop();
+        codigo.append("div");
+        codigo.append("\n");
+
+        pilha_tipos.push("float64");
+        
+    }
+
     public void executar110(){
         pilha_tipos.push("int64");
         codigo.append("ldc.i4 -1\n");
         codigo.append("mul \n");
         codigo.append("\n");
-    }    
+    }
+    
+    public void executar111(Token token){
+        this.operador_relacional = token.getLexeme();
+    }
+    
+    public void executar112(Token token) {
+        pilha_tipos.pop();
+        pilha_tipos.pop();
+
+        pilha_tipos.push("bool");
+
+        switch (this.operador_relacional) {
+
+            case "==":
+                codigo.append("ceq\n");
+                break;
+
+            case "~=":
+                codigo.append("ceq\n");
+                codigo.append("ldc.i4 0\n");
+                codigo.append("ceq\n");
+                break;
+
+            case "<":
+                codigo.append("clt\n");
+                break;
+
+            case ">":
+                codigo.append("cgt\n");
+                break;
+
+            default:
+                break;
+        }
+    }
     
     public void executar115(){
         pilha_tipos.push("bool");
