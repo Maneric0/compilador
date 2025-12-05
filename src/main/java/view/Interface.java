@@ -441,6 +441,18 @@ public class Interface extends javax.swing.JFrame {
     private void btnCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompilarActionPerformed
         textMensagem.setText("");
 
+       
+    if (arquivoAtual == null) {
+        textMensagem.setText("Antes de compilar, salve o arquivo (Ctrl + S).");
+        btnSalvar.doClick(); 
+
+        if (arquivoAtual == null) {
+          
+            textMensagem.setText("Compilação cancelada: arquivo não salvo.");
+            return;
+        }
+    }
+    
         Lexico lexico = new Lexico();
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();
