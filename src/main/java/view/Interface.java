@@ -470,7 +470,8 @@ public class Interface extends javax.swing.JFrame {
                 String jarDir = new File(".").getCanonicalPath();
 
                 // Cria o arquivo saida.il dentro desse diretório
-                File arquivo = new File(jarDir + File.separator + "saida.il");
+               String nomeSemExt = arquivoAtual.getName().substring(0, arquivoAtual.getName().lastIndexOf('.'));
+               File arquivo = new File(jarDir + File.separator + nomeSemExt + ".il");
 
                 // Escreve usando BufferedWriter (código simples)
                             BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
@@ -587,7 +588,7 @@ public class Interface extends javax.swing.JFrame {
         }else {
                 encontrado = "EOF";
             }
-String msg = e.getMessage();
+    String msg = e.getMessage();
 
     // 2.1 — esperado int float bool string list (todos)
     if (msg.contains("int float bool string list")) {
@@ -627,12 +628,10 @@ String msg = e.getMessage();
         // necessário adaptar para mostrar a linha  
         // necessário mostrar também o símbolo encontrado 
     }
-    catch (SemanticError e
-
-    
-    
-) {
-            // trata erros semânticos na parte 4
+    catch (SemanticError e){
+        int linhaErro = getLinha(codigoFonte, e.getPosition());
+        
+        textMensagem.setText("Linha " + linhaErro + " " + e.getMessage()); 
         }
     }//GEN-LAST:event_btnCompilarActionPerformed
 

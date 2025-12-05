@@ -65,12 +65,11 @@ public class Semantico implements Constants
         codigo.append("\n");
         codigo.append(".class public _unica{\n");
         codigo.append(".method static public void _principal(){\n");
-        codigo.append(".entrypoint{\n");
+        codigo.append(".entrypoint\n");
     }
     
     public void executar101(){
         codigo.append("ret\n");
-        codigo.append("}\n");
         codigo.append("}\n");
         codigo.append("}\n");
     }
@@ -314,7 +313,6 @@ public class Semantico implements Constants
 }
     
     public void executar124(Token token) {
-
     String palavra = token.getLexeme();
 
     codigo.append("ldstr ").append(palavra).append("\n");
