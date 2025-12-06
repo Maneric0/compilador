@@ -463,7 +463,6 @@ public class Interface extends javax.swing.JFrame {
         try {
             sintatico.parse(lexico, semantico);
             textMensagem.setText("Arquivo compilado com sucesso!");
-            System.out.println(semantico.getCodigo());
             
             try {
                 // Pega a pasta onde está o arquivo fonte
@@ -477,8 +476,6 @@ public class Interface extends javax.swing.JFrame {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
                 bw.write(semantico.getCodigo().toString());
                 bw.close();
-                
-                System.out.println("Arquivo .il gerado em: " + arquivo.getAbsolutePath());
 
             } catch (Exception e) {
                 e.printStackTrace();
