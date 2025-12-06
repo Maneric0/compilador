@@ -466,15 +466,15 @@ public class Interface extends javax.swing.JFrame {
             System.out.println(semantico.getCodigo());
             
             try {
-                // Pega o diretório do JAR em execução
-                String jarDir = new File(".").getCanonicalPath();
+                // Pega a pasta onde está o arquivo fonte
+                String pastaDoFonte = arquivoAtual.getParent();
 
-                // Cria o arquivo saida.il dentro desse diretório
-               String nomeSemExt = arquivoAtual.getName().substring(0, arquivoAtual.getName().lastIndexOf('.'));
-               File arquivo = new File(jarDir + File.separator + nomeSemExt + ".il");
+                // Gera o .il com o mesmo nome do arquivo fonte (sem extensão)
+                String nomeSemExt = arquivoAtual.getName().substring(0, arquivoAtual.getName().lastIndexOf('.'));
+                File arquivo = new File(pastaDoFonte + File.separator + nomeSemExt + ".il");
 
                 // Escreve usando BufferedWriter (código simples)
-                            BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+                BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
                 bw.write(semantico.getCodigo().toString());
                 bw.close();
                 
